@@ -6,7 +6,7 @@
     <title>Rock-Paper-Scissors dApp</title>
     <link rel="stylesheet" href="style.css">
     <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.0/dist/ethers.umd.min.js"></script>
-    <script src="script.js"></script>
+    <script src="script.js" defer></script>
 </head>
 <body>
     <div class="container">
@@ -48,6 +48,13 @@
             <p class="balance-text">Player Balance: <span id="playerBalance">-</span> ETH</p>
             <p class="balance-text">Contract Balance: <span id="contractBalance">-</span> ETH</p>
             <button class="btn btn-info" onclick="getBalances()">Check Balance</button>
+        </div>
+
+        <div class="history-section">
+            <h2 class="section-title">Game History</h2>
+            <ul id="gameHistory">
+                <li>No games played yet.</li>
+            </ul>
         </div>
     </div>
 </body>

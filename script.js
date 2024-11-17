@@ -1,4 +1,4 @@
-const contractAddress = "0x238a8F72a65b12e8C3c57258E8CF47C336517554";
+const contractAddress = "0x8e77d0e30ae0fC5e328FF41eF9eeE7f3B13C8869";
 const abi = [
   {
     anonymous: false,
@@ -47,6 +47,25 @@ const abi = [
     type: "function",
   },
   {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    name: "gameOutcomes",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
     inputs: [],
     name: "getContractBalance",
     outputs: [
@@ -54,6 +73,19 @@ const abi = [
         internalType: "uint256",
         name: "",
         type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "getLast5Outcomes",
+    outputs: [
+      {
+        internalType: "uint256[]",
+        name: "",
+        type: "uint256[]",
       },
     ],
     stateMutability: "view",
@@ -251,29 +283,118 @@ async function getBalances() {
   }
 }
 
-// Get game outcome
-// Listen for game outcome
+// Get game outcome and display history
 async function getOutcome() {
   try {
-    contract.on("GetGameOutcome", (outcome) => {
+    // Listen for the event and get the outcome
+    contract.once("GetGameOutcome", async (outcome) => {
       const outcomeValue = outcome.toNumber(); // Convert BigNumber to number
-      console.log("Game Outcome Value:", outcomeValue);
+      let resultMessage = "";
 
       switch (outcomeValue) {
         case 0:
-          alert("It's a draw!");
+          resultMessage = "It's a draw!";
           break;
         case 1:
-          alert("You won!");
+          resultMessage = "You won!";
           break;
         case 2:
-          alert("You lost!");
+          resultMessage = "You lost!";
           break;
         default:
-          alert(`Unknown outcome: ${outcomeValue}`);
+          resultMessage = `Unknown outcome: ${outcomeValue}`;
       }
+
+      // Show outcome
+      document.getElementById("outcome").innerText = resultMessage;
+
+      // Save the outcome history
+      saveGameHistory(resultMessage);
     });
   } catch (err) {
     console.error("Error fetching outcome:", err);
   }
 }
+
+// Fetch and display the last 5 game outcomes
+async function fetchGameHistory() {
+  try {
+    const history = await contract.getLast5Outcomes();
+    const historyList = document.getElementById("gameHistory");
+    historyList.innerHTML = ''; // Clear existing history
+
+    history.forEach((outcome) => {
+      let resultMessage = "";
+      switch (outcome.toNumber()) {
+        case 0:
+          resultMessage = "It's a draw!";
+          break;
+        case 1:
+          resultMessage = "You won!";
+          break;
+        case 2:
+          resultMessage = "You lost!";
+          break;
+        default:
+          resultMessage = `Unknown outcome: ${outcome}`;
+      }
+
+      const li = document.createElement("li");
+      li.textContent = resultMessage;
+      historyList.appendChild(li);
+    });
+  } catch (err) {
+    console.error("Error fetching game history:", err);
+  }
+}
+
+// Save game history locally
+let gameHistory = [];
+
+function saveGameHistory(result) {
+  if (gameHistory.length >= 5) {
+    gameHistory.shift(); // Remove oldest game result
+  }
+  gameHistory.push(result);
+
+  const historyList = document.getElementById("gameHistory");
+  historyList.innerHTML = ''; // Clear existing history
+
+  gameHistory.forEach((gameResult) => {
+    const li = document.createElement("li");
+    li.textContent = gameResult;
+    historyList.appendChild(li);
+  });
+}
+
+// Periodically update the outcome every 5 seconds
+function startPeriodicOutcomeUpdate() {
+  setInterval(async () => {
+    try {
+      const outcome = await contract.gameOutcomes(0);  // Assuming the latest outcome is at index 0
+      let resultMessage = "";
+
+      switch (outcome.toNumber()) {
+        case 0:
+          resultMessage = "It's a draw!";
+          break;
+        case 1:
+          resultMessage = "You won!";
+          break;
+        case 2:
+          resultMessage = "You lost!";
+          break;
+        default:
+          resultMessage = `Unknown outcome: ${outcome}`;
+      }
+
+      // Show the most recent outcome
+      document.getElementById("outcome").innerText = resultMessage;
+    } catch (err) {
+      console.error("Error updating outcome:", err);
+    }
+  }, 5000); // Update every 5 seconds
+}
+
+// Call the function to start the periodic updates
+startPeriodicOutcomeUpdate();
