@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rock-Paper-Scissors dApp</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.0/dist/ethers.umd.min.js"></script>
+    <script src="script.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h1 class="title">Rock-Paper-Scissors dApp</h1>
+        <p class="subheading">Play a decentralized game of Rock-Paper-Scissors on the blockchain by GoChain!</p>
+
+        <div class="game-section">
+            <h2 class="section-title">Play Game</h2>
+            <div class="input-group">
+                <label for="choice" class="label">Your Choice:</label>
+                <select id="choice" class="input">
+                    <option value="rock">Rock</option>
+                    <option value="paper">Paper</option>
+                    <option value="scissors">Scissors</option>
+                </select>
+            </div>
+
+            <div class="input-group">
+                <label for="stake" class="label">Stake (ETH):</label>
+                <input type="number" id="stake" class="input" step="0.01" placeholder="Enter stake amount">
+            </div>
+
+            <button class="btn btn-primary" onclick="playGame()">Play Game</button>
+            <p class="outcome">Game Outcome: <span id="outcome">-</span></p>
+        </div>
+
+        <div class="fund-section">
+            <h2 class="section-title">Manage Funds</h2>
+            <div class="input-group">
+                <label for="fund" class="label">Amount (ETH):</label>
+                <input type="number" id="fund" class="input" step="0.01" placeholder="Enter amount">
+            </div>
+
+            <button class="btn btn-secondary" onclick="deposit()">Deposit</button>
+            <button class="btn btn-danger" onclick="withdraw()">Withdraw</button>
+        </div>
+
+        <div class="balance-section">
+            <p class="balance-text">Player Balance: <span id="playerBalance">-</span> ETH</p>
+            <p class="balance-text">Contract Balance: <span id="contractBalance">-</span> ETH</p>
+            <button class="btn btn-info" onclick="getBalances()">Check Balance</button>
+        </div>
+    </div>
+</body>
+</html>
